@@ -42,3 +42,6 @@ next-env.d.ts
 
 # o modelo de variáveis pode ir para o git
 !.env.example
+
+# banco do modo local (dados pessoais)
+.dados-locais/

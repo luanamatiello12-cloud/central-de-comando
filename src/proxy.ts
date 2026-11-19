@@ -12,6 +12,8 @@ export async function proxy(request: NextRequest) {
   const ehApi = path.startsWith("/api/");
 
   if (!url || !key) {
+    // Modo local (só em desenvolvimento): banco embutido, sem login.
+    if (process.env.NODE_ENV !== "production") return NextResponse.next();
     if (ehApi) return NextResponse.json({ erro: "Supabase não configurado." }, { status: 503 });
     if (path !== "/configurar") return NextResponse.redirect(new URL("/configurar", request.url));
     return NextResponse.next();

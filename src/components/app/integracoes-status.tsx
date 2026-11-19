@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { estadoDasIntegracoes, INTEGRACOES_FUTURAS } from "@/lib/integracoes";
 
 /** Lê o estado a cada visita (não no build), para refletir o .env atual. */
@@ -16,12 +17,12 @@ export async function IntegracoesStatus({ comFuturas = false }: { comFuturas?: b
             <p className="text-sm text-muted-foreground">
               {i.uso}. Usada a partir da Etapa {i.etapa}.
             </p>
-            {!i.configurada && <p className="mt-1 text-sm [overflow-wrap:anywhere] text-warning">Falta: {i.falta}</p>}
+            {!i.configurada && <p className={cn("mt-1 text-sm [overflow-wrap:anywhere]", i.selo ? "text-muted-foreground" : "text-warning")}>{i.selo ? i.falta : `Falta: ${i.falta}`}</p>}
           </div>
           {i.configurada ? (
             <Badge className="bg-accent text-success">Chave presente</Badge>
           ) : (
-            <Badge className="bg-warning-soft text-warning">Não configurada</Badge>
+            <Badge className={i.selo ? "bg-accent text-accent-foreground" : "bg-warning-soft text-warning"}>{i.selo ?? "Não configurada"}</Badge>
           )}
         </li>
       ))}

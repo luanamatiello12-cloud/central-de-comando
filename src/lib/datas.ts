@@ -46,7 +46,11 @@ export function fmtData(iso: string | null | undefined, estilo: "curta" | "longa
       : estilo === "semana"
         ? { weekday: "short", day: "numeric", month: "short" }
         : { weekday: "long", day: "numeric", month: "long" };
-  return meioDia(iso).toLocaleDateString("pt-BR", { timeZone: "UTC", ...opcoes }).replace(/\./g, "");
+  // Datas de outro ano mostram o ano, para "10 de nov" não parecer deste ano.
+  const outroAno = iso.slice(0, 4) !== hojeISO().slice(0, 4);
+  return meioDia(iso)
+    .toLocaleDateString("pt-BR", { timeZone: "UTC", ...opcoes, ...(outroAno ? { year: "numeric" } : {}) })
+    .replace(/\./g, "");
 }
 
 /** "hoje", "amanhã" ou a data por extenso curta. */

@@ -5,7 +5,7 @@ import { FERRAMENTAS, type ContextoAgente } from "@/agent/ferramentas";
 import { contextoDoPedido, INSTRUCOES } from "@/agent/instrucoes";
 import { agenteConfigurado, anthropic, MODELO } from "@/agent/provedor";
 import { hojeISO, horaAgora } from "@/lib/datas";
-import { supabaseConfigurado } from "@/lib/supabase/config";
+import { bancoDisponivel } from "@/lib/supabase/config";
 import { supabaseServer } from "@/lib/supabase/server";
 import type { Ambiente } from "@/lib/tipos";
 
@@ -26,7 +26,7 @@ const COM_FALLBACK = /^claude-(fable-5-[12]|opus-5(-5)?|sonnet-5-5)$/;
 const erro = (status: number, mensagem: string) => Response.json({ erro: mensagem }, { status });
 
 export async function POST(req: Request) {
-  if (!supabaseConfigurado()) return erro(503, "O Supabase não está configurado.");
+  if (!bancoDisponivel()) return erro(503, "O banco de dados não está configurado.");
   const supabase = await supabaseServer();
   const {
     data: { user },

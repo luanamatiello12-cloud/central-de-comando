@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { COOKIE_AMBIENTE, getContexto } from "@/lib/contexto";
-import { supabaseConfigurado } from "@/lib/supabase/config";
+import { modoLocal, supabaseConfigurado } from "@/lib/supabase/config";
 import { supabaseServer } from "@/lib/supabase/server";
 
 export type EstadoLogin = { erro?: string; aviso?: string };
@@ -33,6 +33,7 @@ export async function entrarOuCadastrar(_: EstadoLogin, form: FormData): Promise
 }
 
 export async function sair() {
+  if (modoLocal()) redirect("/");
   const supabase = await supabaseServer();
   await supabase.auth.signOut();
   redirect("/login");

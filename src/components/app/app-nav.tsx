@@ -28,10 +28,10 @@ function Marca() {
   );
 }
 
-type Props = { ambientes: Ambiente[]; atual: string | null; email: string };
+type Props = { ambientes: Ambiente[]; atual: string | null; email: string; local: boolean };
 
 /** Escolhe de qual ambiente as telas mostram dados. "Todos" não mistura: só lista lado a lado. */
-function SeletorDeAmbiente({ ambientes, atual, className }: Omit<Props, "email"> & { className?: string }) {
+function SeletorDeAmbiente({ ambientes, atual, className }: Pick<Props, "ambientes" | "atual"> & { className?: string }) {
   return (
     <form action={trocarAmbiente} className={className}>
       <SelectAuto name="ambiente" defaultValue={atual ?? ""} aria-label="Ambiente" className={cn(campo, "w-full")}>
@@ -47,7 +47,7 @@ function SeletorDeAmbiente({ ambientes, atual, className }: Omit<Props, "email">
 }
 
 /** Navegação lateral no computador; cabeçalho e barra inferior no celular. */
-export function AppNav({ ambientes, atual, email }: Props) {
+export function AppNav({ ambientes, atual, email, local }: Props) {
   const pathname = usePathname();
 
   return (
@@ -75,15 +75,23 @@ export function AppNav({ ambientes, atual, email }: Props) {
           })}
         </nav>
         <div className="mt-auto flex flex-col gap-1">
-          <p className="truncate px-2.5 text-xs text-muted-foreground" title={email}>
-            {email}
-          </p>
+          {local ? (
+            <Link href="/configuracoes" className="px-2.5 text-xs text-muted-foreground underline-offset-4 hover:underline" title="Dados guardados neste computador">
+              Modo local
+            </Link>
+          ) : (
+            <p className="truncate px-2.5 text-xs text-muted-foreground" title={email}>
+              {email}
+            </p>
+          )}
           <ThemeToggle />
-          <form action={sair}>
-            <Button type="submit" variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground">
-              <LogOut aria-hidden /> Sair
-            </Button>
-          </form>
+          {!local && (
+            <form action={sair}>
+              <Button type="submit" variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground">
+                <LogOut aria-hidden /> Sair
+              </Button>
+            </form>
+          )}
         </div>
       </aside>
 
@@ -91,11 +99,13 @@ export function AppNav({ ambientes, atual, email }: Props) {
         <Marca />
         <SeletorDeAmbiente ambientes={ambientes} atual={atual} className="ml-auto min-w-0 flex-1" />
         <ThemeToggle />
-        <form action={sair}>
-          <Button type="submit" variant="ghost" size="icon-sm" aria-label="Sair" title="Sair" className="text-muted-foreground">
-            <LogOut aria-hidden />
-          </Button>
-        </form>
+        {!local && (
+          <form action={sair}>
+            <Button type="submit" variant="ghost" size="icon-sm" aria-label="Sair" title="Sair" className="text-muted-foreground">
+              <LogOut aria-hidden />
+            </Button>
+          </form>
+        )}
       </header>
 
       <nav

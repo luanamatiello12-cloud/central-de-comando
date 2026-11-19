@@ -4,6 +4,7 @@ import { addDias, ehDataISO } from "@/lib/datas";
 import type { Supabase } from "@/lib/supabase/server";
 import type { Ambiente, Evento, Projeto, Tarefa } from "@/lib/tipos";
 import { gerarAlertas } from "@/modules/inteligencia/alertas";
+import { buscarMemorias } from "@/modules/memoria/busca";
 
 /**
  * Ferramentas do agente, neutras quanto ao provedor de IA: nome, descrição,
@@ -335,18 +336,8 @@ export const FERRAMENTAS: Ferramenta[] = [
       projeto_id: uuid.optional(),
     }),
     async executar(e, c) {
-      let q = c.supabase
-        .from("memories")
-        .select("id, kind, content, project_id, workspace_id, updated_at")
-        .in("workspace_id", ids(c))
-        .order("updated_at", { ascending: false })
-        .limit(40);
-      if (e.tipo) q = q.eq("kind", e.tipo);
-      if (e.projeto_id) q = q.eq("project_id", e.projeto_id);
-      if (e.consulta?.trim()) q = q.textSearch("fts", e.consulta.trim().split(/\s+/).join(" or "), { type: "websearch", config: "portuguese" });
-      const { data, error } = await q;
-      if (error) throw new Error("Falha ao buscar na memória: " + error.message);
-      const memorias = (data ?? []).map((m) => ({ ...m, ambiente: nomeAmb(c, m.workspace_id), workspace_id: undefined }));
+      const achadas = await buscarMemorias(c.supabase, { consulta: e.consulta, ambientes: ids(c), tipo: e.tipo, projeto: e.projeto_id, limite: 40 });
+      const memorias = achadas.map((m) => ({ id: m.id, kind: m.kind, content: m.content, project_id: m.project_id, updated_at: m.updated_at, ambiente: nomeAmb(c, m.workspace_id) }));
       return { resultado: { memorias }, resumo: `Consultou a memória${e.consulta ? ` por “${e.consulta}”` : ""} (${memorias.length})` };
     },
   }),

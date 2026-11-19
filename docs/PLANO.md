@@ -84,3 +84,12 @@ O código das Etapas 1 a 6 está escrito. O que foi verificado e o que não foi:
 - **Exclusão pelo agente:** nunca direta. `solicitar_exclusao` grava uma ação pendente em `agent_actions`; a exclusão só acontece em `confirmarAcao`, disparada pelo usuário.
 - **Acesso do agente:** `workspaces.agent_access` (Ministério começa bloqueado) e `conversations.allow_cross` (consulta a outros ambientes, por conversa).
 - **Pesquisa na internet:** ferramenta de busca do próprio provedor (`web_search`), até 5 buscas por resposta. Cobrada à parte pela API.
+
+## Modo local
+
+Sem as chaves do Supabase e fora de produção, o app usa um Postgres embutido (PGlite) gravado em `.dados-locais/`, com as mesmas migrações, um usuário só e sem login. O adaptador fica em `src/lib/local/banco.ts` e imita a parte do cliente do Supabase que o app usa.
+
+- Testado no navegador no modo local: criar, editar, concluir, adiar e excluir tarefas e subtarefas; projetos; compromissos e conflito de horário; memória e busca; painel, alertas, relatórios, permissões do agente.
+- Não testado: login e RLS com o Supabase real; a conversa com o agente (falta a chave de IA).
+- Os dados do modo local não migram sozinhos para o Supabase.
+- Em produção o modo local nunca vale: sem chaves, o app mostra `/configurar`.

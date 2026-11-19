@@ -1,5 +1,6 @@
 import "server-only";
 import type { Contexto } from "@/lib/contexto";
+import { buscarMemorias } from "@/modules/memoria/busca";
 import type { AcaoAgente, Auditoria, Evento, Memoria, Projeto, Tarefa } from "@/lib/tipos";
 
 /**
@@ -41,15 +42,8 @@ export async function listarEventos(c: Contexto, de: string, ate: string) {
   return checar<Evento>(await q, "os compromissos");
 }
 
-export async function listarMemorias(c: Contexto, busca = "") {
-  let q = c.supabase
-    .from("memories")
-    .select("id, workspace_id, project_id, kind, content, source, created_at, updated_at")
-    .order("updated_at", { ascending: false })
-    .limit(500);
-  if (c.atual) q = q.eq("workspace_id", c.atual.id);
-  if (busca.trim()) q = q.textSearch("fts", busca.trim(), { type: "websearch", config: "portuguese" });
-  return checar<Memoria>(await q, "a memória");
+export async function listarMemorias(c: Contexto, busca = ""): Promise<Memoria[]> {
+  return buscarMemorias(c.supabase, { consulta: busca, ambientes: c.atual ? [c.atual.id] : undefined, limite: 500 });
 }
 
 export async function listarAtividade(c: Contexto, limite = 12) {

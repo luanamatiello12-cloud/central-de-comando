@@ -2,7 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { supabaseConfigurado } from "./supabase/config";
+import { bancoDisponivel } from "./supabase/config";
 import { supabaseServer } from "./supabase/server";
 import type { Ambiente } from "./tipos";
 
@@ -14,7 +14,7 @@ export const COOKIE_AMBIENTE = "ambiente";
  * /configurar, sem sessão vai para /login.
  */
 export const getContexto = cache(async () => {
-  if (!supabaseConfigurado()) redirect("/configurar");
+  if (!bancoDisponivel()) redirect("/configurar");
   const supabase = await supabaseServer();
   const {
     data: { user },
