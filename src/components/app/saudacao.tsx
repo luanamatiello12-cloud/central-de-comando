@@ -39,7 +39,7 @@ export function Saudacao() {
           " "
         )}
       </p>
-      <h1 className="text-3xl font-bold md:text-4xl">
+      <h1 className="text-4xl font-bold md:text-5xl">
         {agora ? `${saudacao(agora.getHours())}.` : "Olá."}
       </h1>
     </div>

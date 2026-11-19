@@ -106,32 +106,34 @@ export default async function Inicio() {
 
   return (
     <>
-      <Saudacao />
+      {/* Abertura do painel: saudação e conversa com o agente sobre o gradiente da paleta. */}
+      <section className="hero flex flex-col gap-5 rounded-3xl px-5 py-6 md:px-8 md:py-8">
+        <Saudacao />
+        {agenteConfigurado() ? (
+          <form action="/agente" className="flex items-center gap-2 rounded-2xl border border-white/25 bg-white/12 p-1.5 backdrop-blur-sm">
+            <input
+              className={cn(campo, "h-10 flex-1 border-0 bg-transparent text-white focus-visible:ring-0")}
+              name="q"
+              placeholder="Pergunte ou peça algo ao agente…"
+              aria-label="Mensagem para o agente"
+              autoComplete="off"
+              required
+            />
+            <Button type="submit" size="icon" aria-label="Abrir conversa com o agente" className="bg-white text-[var(--hero-b)] hover:bg-white/90">
+              <ArrowUp aria-hidden />
+            </Button>
+          </form>
+        ) : (
+          <p className="w-fit rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm">
+            O agente ainda não está ativo: falta a chave de IA.{" "}
+            <Link href="/configuracoes" className="font-semibold underline underline-offset-4">
+              Ver o que falta
+            </Link>
+          </p>
+        )}
+      </section>
 
       <AcoesPendentes acoes={pendentes} />
-
-      {agenteConfigurado() ? (
-        <form action="/agente" className="flex items-center gap-2 rounded-2xl border border-border bg-card p-2 shadow-xs">
-          <input
-            className={cn(campo, "h-10 flex-1 border-0 bg-transparent focus-visible:ring-0")}
-            name="q"
-            placeholder="Pergunte ou peça algo ao agente…"
-            aria-label="Mensagem para o agente"
-            autoComplete="off"
-            required
-          />
-          <Button type="submit" size="icon" aria-label="Abrir conversa com o agente">
-            <ArrowUp aria-hidden />
-          </Button>
-        </form>
-      ) : (
-        <p className="rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-          O agente ainda não está ativo: falta a chave de IA.{" "}
-          <Link href="/configuracoes" className="font-medium text-primary underline-offset-4 hover:underline">
-            Ver o que falta
-          </Link>
-        </p>
-      )}
 
       {alertas.length > 0 && (
         <Card>

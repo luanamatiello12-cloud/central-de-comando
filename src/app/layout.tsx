@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     "Central de comando pessoal: projetos, tarefas, calendário e um agente de IA.",
 };
 
-// Aplica o tema salvo antes da primeira pintura, para a tela não piscar.
-const themeScript = `(function(){try{var t=localStorage.getItem("tema");var d=t==="escuro"||((!t||t==="sistema")&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
+// Aplica o tema e a paleta salvos antes da primeira pintura, para a tela não piscar.
+const themeScript = `(function(){try{var e=document.documentElement,t=localStorage.getItem("tema");var d=t==="escuro"||((!t||t==="sistema")&&matchMedia("(prefers-color-scheme: dark)").matches);e.classList.toggle("dark",d);var c=localStorage.getItem("cor");if(c&&/^[a-z]+$/.test(c))e.dataset.cor=c}catch(x){}})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

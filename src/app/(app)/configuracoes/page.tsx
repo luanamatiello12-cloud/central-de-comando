@@ -2,9 +2,11 @@ import { Check, Circle, LoaderCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MODELO } from "@/agent/provedor";
+import { CorPicker } from "@/components/app/cor-picker";
 import { Enviar } from "@/components/app/form";
 import { IntegracoesCarregando, IntegracoesStatus } from "@/components/app/integracoes-status";
 import { PageHeader } from "@/components/app/page-parts";
+import { ThemeToggle } from "@/components/app/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getContexto, nomeDoAmbiente } from "@/lib/contexto";
@@ -36,7 +38,18 @@ export default async function Configuracoes() {
 
   return (
     <>
-      <PageHeader titulo="Ajustes" descricao="Integrações, permissões do agente e histórico do que ele fez." />
+      <PageHeader titulo="Ajustes" descricao="Aparência, integrações, permissões do agente e histórico do que ele fez." />
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-heading text-xl">Aparência</CardTitle>
+          <CardDescription>A cor vale para este navegador. Claro, escuro ou do sistema você troca no botão ao lado.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-4">
+          <CorPicker />
+          <ThemeToggle />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

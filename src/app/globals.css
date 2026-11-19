@@ -51,81 +51,190 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Cores. Cada paleta define só as cores que mudam; o resto (barra lateral,
+ * popover, anel de foco, gráficos) deriva delas. A paleta padrão é "oceano";
+ * as outras entram por html[data-cor="..."], escolhido em Ajustes.
+ * Para criar uma paleta: copie um par de blocos (claro e escuro) e troque os valores.
+ */
 :root {
-  /* Identidade Rumo: verde-pinho sobre neutros esverdeados, âmbar para avisos */
-  --background: #f2f5f3;
-  --foreground: #14201b;
+  --background: #f3f5fa;
+  --foreground: #131a2b;
   --card: #ffffff;
-  --card-foreground: #14201b;
-  --popover: #ffffff;
-  --popover-foreground: #14201b;
-  --primary: #1f5f4a;
+  --muted: #e7ebf4;
+  --muted-foreground: #5a6480;
+  --accent: #dde6fb;
+  --accent-foreground: #1f3fa6;
+  --primary: #2447b8;
   --primary-foreground: #ffffff;
-  --secondary: #e7ece9;
-  --secondary-foreground: #14201b;
-  --muted: #e7ece9;
-  --muted-foreground: #5b6b63;
-  --accent: #dcebe4;
-  --accent-foreground: #1f5f4a;
+  --border: #d6dcea;
+  --hero-a: #2447b8;
+  --hero-b: #162c78;
+
   --destructive: #b42318;
   --success: #1e7a46;
   --warning: #b7791f;
   --warning-soft: #f6ebd6;
-  --border: #d5ddd8;
-  --input: #d5ddd8;
-  --ring: #1f5f4a;
-  --chart-1: #1f5f4a;
-  --chart-2: #b7791f;
-  --chart-3: #1e7a46;
-  --chart-4: #5b6b63;
-  --chart-5: #b42318;
-  --radius: 0.625rem;
-  --sidebar: #f2f5f3;
-  --sidebar-foreground: #14201b;
-  --sidebar-primary: #1f5f4a;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #dcebe4;
-  --sidebar-accent-foreground: #1f5f4a;
-  --sidebar-border: #d5ddd8;
-  --sidebar-ring: #1f5f4a;
+  --radius: 0.875rem;
+  --sombra: 0 1px 2px rgb(15 23 42 / 0.05), 0 12px 28px -18px rgb(15 23 42 / 0.25);
+
+  /* Derivadas: não precisam ser repetidas em cada paleta. */
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--muted);
+  --secondary-foreground: var(--foreground);
+  --input: var(--border);
+  --ring: var(--primary);
+  --chart-1: var(--primary);
+  --chart-2: var(--warning);
+  --chart-3: var(--success);
+  --chart-4: var(--muted-foreground);
+  --chart-5: var(--destructive);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--primary);
 }
 
 .dark {
   color-scheme: dark;
-  --background: #0e1513;
-  --foreground: #e6eeea;
-  --card: #16201c;
-  --card-foreground: #e6eeea;
-  --popover: #16201c;
-  --popover-foreground: #e6eeea;
-  --primary: #5fbf9a;
-  --primary-foreground: #0b1411;
-  --secondary: #1d2925;
-  --secondary-foreground: #e6eeea;
-  --muted: #1d2925;
-  --muted-foreground: #93a59c;
-  --accent: #1e3a30;
-  --accent-foreground: #5fbf9a;
+  --background: #0c111d;
+  --foreground: #e6eaf5;
+  --card: #141b2b;
+  --muted: #1b2437;
+  --muted-foreground: #93a0bd;
+  --accent: #1b2a52;
+  --accent-foreground: #9db6ff;
+  --primary: #7ea2ff;
+  --primary-foreground: #0a1024;
+  --border: #25304a;
+  --hero-a: #1d3a99;
+  --hero-b: #101f57;
+
   --destructive: #f2877b;
   --success: #5cc48a;
   --warning: #e3a947;
   --warning-soft: #3a2f1a;
+  --sombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 14px 30px -18px rgb(0 0 0 / 0.7);
+}
+
+/* Pinho: o verde da primeira versão. */
+:root[data-cor="pinho"] {
+  --background: #f2f5f3;
+  --foreground: #14201b;
+  --muted: #e7ece9;
+  --muted-foreground: #5b6b63;
+  --accent: #dcebe4;
+  --accent-foreground: #1f5f4a;
+  --primary: #1f5f4a;
+  --border: #d5ddd8;
+  --hero-a: #1f5f4a;
+  --hero-b: #123a2d;
+}
+.dark[data-cor="pinho"] {
+  --background: #0e1513;
+  --foreground: #e6eeea;
+  --card: #16201c;
+  --muted: #1d2925;
+  --muted-foreground: #93a59c;
+  --accent: #1e3a30;
+  --accent-foreground: #5fbf9a;
+  --primary: #5fbf9a;
+  --primary-foreground: #0b1411;
   --border: #2a3832;
-  --input: #2a3832;
-  --ring: #5fbf9a;
-  --chart-1: #5fbf9a;
-  --chart-2: #e3a947;
-  --chart-3: #5cc48a;
-  --chart-4: #93a59c;
-  --chart-5: #f2877b;
-  --sidebar: #0e1513;
-  --sidebar-foreground: #e6eeea;
-  --sidebar-primary: #5fbf9a;
-  --sidebar-primary-foreground: #0b1411;
-  --sidebar-accent: #1e3a30;
-  --sidebar-accent-foreground: #5fbf9a;
-  --sidebar-border: #2a3832;
-  --sidebar-ring: #5fbf9a;
+  --hero-a: #1b5241;
+  --hero-b: #0f2f25;
+}
+
+:root[data-cor="vinho"] {
+  --background: #f8f3f4;
+  --foreground: #26141a;
+  --muted: #f0e6e9;
+  --muted-foreground: #7a5d66;
+  --accent: #f6dde4;
+  --accent-foreground: #8a2846;
+  --primary: #8a2846;
+  --border: #e6d6da;
+  --hero-a: #8a2846;
+  --hero-b: #561629;
+}
+.dark[data-cor="vinho"] {
+  --background: #150e11;
+  --foreground: #f1e6e9;
+  --card: #1f1519;
+  --muted: #2a1d22;
+  --muted-foreground: #b59aa3;
+  --accent: #3d1a27;
+  --accent-foreground: #f29bb4;
+  --primary: #f08aa6;
+  --primary-foreground: #23090f;
+  --border: #3a2830;
+  --hero-a: #74223b;
+  --hero-b: #431120;
+}
+
+/* Âmbar: o aviso muda para laranja-avermelhado, para não se confundir com a cor principal. */
+:root[data-cor="ambar"] {
+  --background: #f8f5ef;
+  --foreground: #231a0e;
+  --muted: #efe8da;
+  --muted-foreground: #75654a;
+  --accent: #f5e3c3;
+  --accent-foreground: #8a4b08;
+  --primary: #a8570a;
+  --border: #e3d9c5;
+  --hero-a: #a8570a;
+  --hero-b: #6b3505;
+  --warning: #b4491a;
+  --warning-soft: #f8e0d3;
+}
+.dark[data-cor="ambar"] {
+  --background: #14110b;
+  --foreground: #f1eadc;
+  --card: #1e1910;
+  --muted: #2a2317;
+  --muted-foreground: #b3a385;
+  --accent: #3b2a10;
+  --accent-foreground: #f3b562;
+  --primary: #f0a548;
+  --primary-foreground: #1f1303;
+  --border: #3a3120;
+  --hero-a: #8a4708;
+  --hero-b: #4f2704;
+  --warning: #f08a5d;
+  --warning-soft: #3d2014;
+}
+
+:root[data-cor="grafite"] {
+  --background: #f4f5f6;
+  --foreground: #16181d;
+  --muted: #e9ebee;
+  --muted-foreground: #5e6470;
+  --accent: #e2e6ec;
+  --accent-foreground: #1f2530;
+  --primary: #1f2530;
+  --border: #d9dce1;
+  --hero-a: #2a303b;
+  --hero-b: #15181e;
+}
+.dark[data-cor="grafite"] {
+  --background: #0f1114;
+  --foreground: #e8eaed;
+  --card: #17191e;
+  --muted: #20232a;
+  --muted-foreground: #979da9;
+  --accent: #2a2e37;
+  --accent-foreground: #f2f3f5;
+  --primary: #e8eaed;
+  --primary-foreground: #111317;
+  --border: #2b2f37;
+  --hero-a: #2a2f3a;
+  --hero-b: #14171c;
 }
 
 @layer base {
@@ -144,4 +253,38 @@ h1, h2, h3 {
   font-family: var(--font-heading), var(--font-sans), system-ui, sans-serif;
   letter-spacing: -0.01em;
   text-wrap: balance;
+}
+
+/* ------------------------------------------------------------- acabamento */
+
+/* Fundo com um leve brilho da cor principal no topo, fixo ao rolar. */
+body {
+  background-image:
+    radial-gradient(900px 420px at 85% -120px, color-mix(in oklab, var(--primary) 13%, transparent), transparent 70%),
+    radial-gradient(700px 380px at 0% -160px, color-mix(in oklab, var(--primary) 7%, transparent), transparent 70%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Cartões com profundidade suave em vez de só uma linha. */
+[data-slot="card"] {
+  box-shadow: var(--sombra);
+}
+
+/* Bloco de abertura do painel: gradiente da paleta, texto claro. */
+.hero {
+  --foreground: #ffffff;
+  --muted-foreground: rgb(255 255 255 / 0.78);
+  color: #ffffff;
+  background:
+    radial-gradient(520px 260px at 92% -40%, rgb(255 255 255 / 0.18), transparent 70%),
+    linear-gradient(135deg, var(--hero-a), var(--hero-b));
+  box-shadow: 0 18px 40px -22px color-mix(in oklab, var(--hero-b) 80%, black);
+}
+.hero ::placeholder {
+  color: rgb(255 255 255 / 0.7);
+}
+
+h1 {
+  letter-spacing: -0.02em;
 }

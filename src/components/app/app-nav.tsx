@@ -9,6 +9,7 @@ import type { Ambiente } from "@/lib/tipos";
 import { cn } from "@/lib/utils";
 import { sair, trocarAmbiente } from "@/modules/conta/actions";
 import { campo, SelectAuto } from "./form";
+import { CorPicker } from "./cor-picker";
 import { ThemeToggle } from "./theme-toggle";
 
 function ativo(pathname: string, href: string) {
@@ -52,7 +53,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
 
   return (
     <>
-      <aside className="sticky top-0 hidden h-dvh flex-col gap-4 overflow-y-auto border-r border-border px-4 py-7 md:flex">
+      <aside className="sticky top-0 hidden h-dvh flex-col gap-4 overflow-y-auto border-r border-border bg-sidebar/80 px-4 py-7 backdrop-blur-sm md:flex">
         <Marca />
         <SeletorDeAmbiente ambientes={ambientes} atual={atual} />
         <nav aria-label="Seções" className="flex flex-col gap-1">
@@ -65,7 +66,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
                 aria-current={on ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                  on && "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground",
+                  on && "bg-primary text-primary-foreground shadow-sm hover:bg-primary hover:text-primary-foreground",
                 )}
               >
                 <Icon className="size-[18px]" aria-hidden />
@@ -85,7 +86,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
                 aria-current={on ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                  on && "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground",
+                  on && "bg-primary text-primary-foreground shadow-sm hover:bg-primary hover:text-primary-foreground",
                 )}
               >
                 <Icon className="size-[18px]" aria-hidden />
@@ -104,6 +105,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
               {email}
             </p>
           )}
+          <CorPicker compacto />
           <ThemeToggle />
           {!local && (
             <form action={sair}>
@@ -115,7 +117,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
         </div>
       </aside>
 
-      <header className="flex items-center gap-2 border-b border-border px-4 py-3 md:hidden">
+      <header className="flex items-center gap-2 border-b border-border bg-sidebar/80 px-4 py-3 backdrop-blur-sm md:hidden">
         <Marca />
         <SeletorDeAmbiente ambientes={ambientes} atual={atual} className="ml-auto min-w-0 flex-1" />
         <ThemeToggle />
@@ -130,7 +132,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
 
       <nav
         aria-label="Seções"
-        className="fixed inset-x-0 bottom-0 z-10 flex gap-1 overflow-x-auto border-t border-border bg-card px-2 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-10 flex gap-1 overflow-x-auto border-t border-border bg-sidebar/95 px-2 pt-1.5 backdrop-blur-sm pb-[calc(0.375rem+env(safe-area-inset-bottom))] md:hidden"
       >
         {[...NAV, ...NAV_MODULOS].map(({ href, label, icon: Icon }) => {
           const on = ativo(pathname, href);
@@ -141,7 +143,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
               aria-current={on ? "page" : undefined}
               className={cn(
                 "flex min-w-14 flex-1 flex-col items-center gap-0.5 rounded-lg px-1.5 py-1 text-[0.65rem] whitespace-nowrap text-muted-foreground",
-                on && "text-primary",
+                on && "bg-accent font-semibold text-accent-foreground",
               )}
             >
               <Icon className="size-5" aria-hidden />
