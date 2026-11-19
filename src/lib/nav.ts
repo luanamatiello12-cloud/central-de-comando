@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   ListChecks,
   Settings,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 
@@ -19,6 +20,7 @@ export const NAV: NavItem[] = [
   { href: "/tarefas", label: "Tarefas", icon: ListChecks },
   { href: "/calendario", label: "Calendário", icon: CalendarDays },
   { href: "/projetos", label: "Projetos", icon: FolderKanban },
+  { href: "/financeiro", label: "Financeiro", icon: Wallet },
   { href: "/memoria", label: "Memória", icon: Brain },
   { href: "/relatorios", label: "Relatórios", icon: FileBarChart },
   { href: "/configuracoes", label: "Ajustes", icon: Settings },

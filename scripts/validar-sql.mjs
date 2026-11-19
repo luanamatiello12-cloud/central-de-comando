@@ -104,4 +104,41 @@ await como(B, "select garantir_ambientes()");
 r = await como(B, "select count(*) n from workspaces");
 espera(Number(r.rows[0].n) === 5, "garantir_ambientes recria o ambiente que faltava");
 
+// ---- módulo financeiro
+const finA = (await como(A, "select id from workspaces where slug = 'financeiro'")).rows[0].id;
+await como(A, "insert into fin_settings (opening_balance, opening_date) values (1000, current_date)");
+const fixa = (
+  await como(
+    A,
+    `insert into fin_recurring (workspace_id, kind, description, amount, day_of_month, start_month) values ('${finA}', 'despesa', 'Internet', 119.90, 15, to_char(current_date, 'YYYY-MM')) returning id`,
+  )
+).rows[0].id;
+const quitar = (descricao) =>
+  como(
+    A,
+    `insert into fin_transactions (workspace_id, kind, description, amount, occurred_on, recurring_id, ref_month) values ('${finA}', 'despesa', '${descricao}', 119.90, current_date, '${fixa}', to_char(current_date, 'YYYY-MM'))`,
+  );
+await quitar("Internet");
+negado = false;
+try {
+  await quitar("Internet de novo");
+} catch {
+  negado = true;
+}
+espera(negado, "conta fixa não pode ser quitada duas vezes no mesmo mês");
+
+r = await como(B, "select (select count(*) from fin_transactions) t, (select count(*) from fin_recurring) f, (select count(*) from fin_settings) s");
+espera(Object.values(r.rows[0]).every((v) => Number(v) === 0), "usuário B não enxerga as finanças de A");
+
+negado = false;
+try {
+  await como(A, `insert into fin_transactions (workspace_id, kind, description, amount, occurred_on) values ('${finA}', 'despesa', 'negativo', -5, current_date)`);
+} catch {
+  negado = true;
+}
+espera(negado, "valor negativo é recusado");
+
+r = await como(A, "select label from audit_log where table_name = 'fin_transactions'");
+espera(r.rows.length === 1 && r.rows[0].label === "Internet", "lançamento entra na auditoria com a descrição");
+
 console.log(process.exitCode ? "\nHá falhas." : "\nTudo certo.");

@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getContexto, nomeDoAmbiente } from "@/lib/contexto";
 import { addDias, fmtHora, hojeISO, quando } from "@/lib/datas";
+import { brl } from "@/lib/dinheiro";
 import type { Auditoria } from "@/lib/tipos";
 import { cn } from "@/lib/utils";
 import { AcoesPendentes } from "@/modules/agente/pendentes";
 import { agruparSubtarefas, listarAcoesPendentes, listarAtividade, listarEventos, listarProjetos, listarTarefas } from "@/modules/dados";
+import { alertasFinanceiros, livreAteRecebimento, type Financas } from "@/modules/financeiro/calculos";
+import { carregarFinancas } from "@/modules/financeiro/dados";
 import { gerarAlertas } from "@/modules/inteligencia/alertas";
 import { NovaTarefa } from "@/modules/tarefas/nova-tarefa";
 import { TarefaItem } from "@/modules/tarefas/tarefa-item";
@@ -20,6 +23,10 @@ const TABELA: Record<string, [string, "a" | "o"]> = {
   projects: ["Projeto", "o"],
   events: ["Compromisso", "o"],
   memories: ["Memória", "a"],
+  fin_transactions: ["Lançamento", "o"],
+  fin_recurring: ["Conta fixa", "a"],
+  fin_installments: ["Parcelamento", "o"],
+  fin_goals: ["Meta financeira", "a"],
 };
 function descreverAtividade(a: Auditoria) {
   const [nome, g] = TABELA[a.table_name] ?? ["Registro", "o"];
@@ -57,7 +64,18 @@ export default async function Inicio() {
     c.atual ? listarEventos(geral, hoje, addDias(hoje, 7)) : null,
   ]);
 
-  const alertas = gerarAlertas({ tarefas, projetos, eventos, hoje });
+  // As finanças aparecem no painel geral e no do ambiente Financeiro, nunca nos outros.
+  const mostraFinancas = !c.atual || c.atual.slug === "financeiro";
+  let financas: Financas | null = null;
+  if (mostraFinancas) {
+    try {
+      financas = await carregarFinancas(c.supabase);
+    } catch {
+      financas = null; // tabelas financeiras ainda não criadas no Supabase
+    }
+  }
+  const livre = financas ? livreAteRecebimento(financas, hoje) : null;
+  const alertas = [...gerarAlertas({ tarefas, projetos, eventos, hoje }), ...(financas ? alertasFinanceiros(financas, hoje) : [])];
   const { principais, filhas } = agruparSubtarefas(tarefas);
   const peso = { alta: 0, media: 1, baixa: 2 };
   const prioritarias = principais
@@ -208,6 +226,38 @@ export default async function Inicio() {
             )}
           </CardContent>
         </Card>
+
+        {financas && livre && (
+          <Card>
+            <CardContent>
+              <Titulo href="/financeiro" link="Financeiro">
+                Resumo financeiro
+              </Titulo>
+              {financas.config || financas.lancamentos.length || financas.fixas.length ? (
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
+                  <div>
+                    <dt className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">Saldo hoje</dt>
+                    <dd className={cn("font-mono text-xl tabular-nums", livre.saldo < 0 && "text-destructive")}>{brl(livre.saldo)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">Livre até {quando(livre.ate, hoje)}</dt>
+                    <dd className={cn("font-mono text-xl tabular-nums", livre.livre < 0 ? "text-destructive" : "text-success")}>{brl(livre.livre)}</dd>
+                  </div>
+                  <p className="col-span-2 text-sm text-muted-foreground">
+                    {livre.comprometido.length
+                      ? `${livre.comprometido.length} ${livre.comprometido.length === 1 ? "conta" : "contas"} (${brl(livre.totalComprometido)}) ${livre.comprometido.length === 1 ? "vence" : "vencem"} antes disso.`
+                      : "Nenhuma conta cadastrada vence antes disso."}
+                    {!financas.config && " O saldo inicial ainda não foi informado."}
+                  </p>
+                </dl>
+              ) : (
+                <p className={vazio}>
+                  Nada cadastrado ainda. Informe seu saldo e suas contas fixas no módulo Financeiro para ver aqui quanto está livre.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardContent>

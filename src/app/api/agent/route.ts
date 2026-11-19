@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodTool } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { FERRAMENTAS, type ContextoAgente } from "@/agent/ferramentas";
+import { FERRAMENTAS_FINANCEIRAS } from "@/agent/ferramentas-financeiro";
 import { contextoDoPedido, INSTRUCOES } from "@/agent/instrucoes";
 import { agenteConfigurado, anthropic, MODELO } from "@/agent/provedor";
 import { hojeISO, horaAgora } from "@/lib/datas";
@@ -117,7 +118,7 @@ export async function POST(req: Request) {
           result: linha.result ?? null,
         });
 
-      const ferramentas = FERRAMENTAS.map((f) =>
+      const ferramentas = [...FERRAMENTAS, ...FERRAMENTAS_FINANCEIRAS].map((f) =>
         betaZodTool({
           name: f.nome,
           description: f.descricao,

@@ -93,3 +93,18 @@ Sem as chaves do Supabase e fora de produção, o app usa um Postgres embutido (
 - Não testado: login e RLS com o Supabase real; a conversa com o agente (falta a chave de IA).
 - Os dados do modo local não migram sozinhos para o Supabase.
 - Em produção o modo local nunca vale: sem chaves, o app mostra `/configurar`.
+
+## Módulo Financeiro
+
+Construído em `src/modules/financeiro/` e `src/app/(app)/financeiro/`, com a migração `0002_financeiro.sql`.
+
+- **Dados:** saldo inicial (`fin_settings`), lançamentos (`fin_transactions`), receitas e despesas fixas (`fin_recurring`), parcelas e financiamentos (`fin_installments`), orçamento por categoria (`fin_budgets`) e metas (`fin_goals`). Tudo com RLS, no ambiente Financeiro.
+- **Cálculos:** ficam em `calculos.ts`, sem banco e sem IA, em centavos inteiros. A tela e as ferramentas do agente usam as mesmas funções.
+- **Livre até o próximo recebimento:** saldo de hoje menos as contas fixas e parcelas não pagas que vencem antes da próxima receita fixa (ou até o fim do mês, sem receita fixa).
+- **Projeção:** saldo ao fim dos próximos 6 meses. A única estimativa é a média de despesas avulsas dos últimos meses com lançamentos; sem histórico, ela é zero e a tela diz isso.
+- **Simulador:** compra à vista ou parcelada, com juros opcionais (tabela Price). Não grava nada e não recomenda: mostra parcela, renda comprometida antes e depois e o saldo projetado.
+- **Pagar uma conta** cria um lançamento ligado à origem; excluir o lançamento desfaz o pagamento. Uma conta fixa só pode ser quitada uma vez por mês (índice único no banco).
+- **Agente:** `src/agent/ferramentas-financeiro.ts` (resumo, lançamentos, vencimentos, quitar, simular). Só funciona com o ambiente Financeiro liberado na conversa.
+- **Testes:** 36 verificações em `scripts/testar-financeiro.ts`, com um cenário conferido à mão; testado também no navegador, no modo local.
+- **Fora desta versão:** várias contas bancárias e transferências entre elas, cartão de crédito com fatura, importação de extrato, juros de financiamento com saldo devedor, e relatórios exportáveis.
+- **No Supabase:** depois do `0001_base.sql`, executar também o `0002_financeiro.sql`.
