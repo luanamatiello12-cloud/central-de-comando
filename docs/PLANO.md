@@ -108,3 +108,31 @@ Construído em `src/modules/financeiro/` e `src/app/(app)/financeiro/`, com a mi
 - **Testes:** 36 verificações em `scripts/testar-financeiro.ts`, com um cenário conferido à mão; testado também no navegador, no modo local.
 - **Fora desta versão:** várias contas bancárias e transferências entre elas, cartão de crédito com fatura, importação de extrato, juros de financiamento com saldo devedor, e relatórios exportáveis.
 - **No Supabase:** depois do `0001_base.sql`, executar também o `0002_financeiro.sql`.
+
+## Módulos especializados
+
+Trabalho, Ministério, Faculdade, Carreira, Vida pessoal e Pesquisa compartilham uma base comum em `src/modules/registros/`, com a migração `0003_modulos.sql`.
+
+- **Esquema:** `esquemas.ts` descreve cada módulo como uma lista de entidades (título, situações, data, campos, a quem pertence, o que mostra no detalhe, quando avisar). Para criar um módulo, uma entidade ou um campo, basta acrescentar ali: telas, validação, alertas e ferramentas do agente saem do esquema.
+- **Banco:** uma tabela, `records`. Título, situação e data ficam em colunas; os demais campos, em `data` (jsonb). `parent_id` liga um registro ao seu "pai" (pessoa ao grupo, avaliação à disciplina, item à lista).
+- **Telas:** `/m/[modulo]` (abas por entidade, formulário e lista) e `/m/[modulo]/[id]` (detalhe, com os registros que pertencem a ele).
+- **Ambientes:** Trabalho usa o ambiente Trabalho; Ministério, o Ministério (bloqueado para o agente por padrão); Faculdade, o Acadêmico; Carreira, Vida pessoal e Pesquisa, o Pessoal.
+- **Alertas:** provas e trabalhos, prazos de inscrição, encontros, eventos, entrevistas, demandas, datas importantes (anuais), viagens, manutenções e validade de documentos entram no painel inicial.
+- **Contas próprias:** média ponderada das avaliações de uma disciplina; vagas ocupadas de um evento; itens feitos de uma lista; sequência de dias dos hábitos.
+- **Agente:** `src/agent/ferramentas-modulos.ts` tem três ferramentas genéricas (listar, criar e atualizar registros) com o catálogo de tipos gerado do esquema. Excluir continua passando pela confirmação do usuário.
+- **Links:** só são aceitos e exibidos endereços `http(s)`.
+
+### O que cada módulo cobre e o que não cobre
+
+| Módulo | Construído | Ainda não |
+|---|---|---|
+| Trabalho | Reuniões com pauta, ata e decisões; demandas; responsáveis; documentos (links); laboratório de inovação | Etapas e cronograma dentro do projeto; atas geradas sozinhas (o agente escreve quando pedido); envio de arquivos |
+| Ministério | Grupos (PG, GD, equipes) com pessoas e encontros; papel e etapa de integração; batismo; formação; estudos; eventos com inscrições e vagas; metas em texto | Calendário próprio do ministério; sugestões de desenvolvimento de liderança (dependem do agente, bloqueado neste ambiente por padrão) |
+| Faculdade | Cursos e certificados; disciplinas por semestre; provas e trabalhos com nota e média; materiais; portfólio | Leitura e resumo de PDFs; calendário acadêmico separado |
+| Carreira | Oportunidades com prazo, salário, modalidade e situação; critérios de busca; currículo; entrevistas | Monitoramento automático (hoje a busca roda quando o usuário pede ao agente) |
+| Vida pessoal | Hábitos; datas importantes anuais; viagens com checklist; listas e compras; manutenção de veículos; documentos e validades; objetivos | Lembretes por notificação |
+| Pesquisa | Pedido de pesquisa ao agente por categoria; pesquisas salvas com resultado e fontes | Depende da chave de IA; sem ela, só o registro manual |
+
+- **Testes:** 29 verificações em `scripts/testar-modulos.ts` (consistência do esquema, validação, datas anuais, alertas, média, hábitos) e uso no navegador, no modo local, em Ministério, Faculdade e Vida pessoal.
+- **Não testado:** as ferramentas do agente para os módulos (falta a chave de IA) e as telas de Trabalho, Carreira e Pesquisa campo a campo (usam exatamente o mesmo código das que foram testadas).
+- **No Supabase:** executar também o `0003_modulos.sql`.

@@ -407,12 +407,12 @@ export const FERRAMENTAS: Ferramenta[] = [
     descricao:
       "Pede a exclusão de um registro. A exclusão NÃO acontece agora: fica pendente até o usuário confirmar na tela. Depois de chamar, avise o usuário de que ele precisa confirmar. Esta é a única forma de excluir.",
     esquema: z.object({
-      tipo: z.enum(["tarefa", "projeto", "compromisso", "memoria"]),
+      tipo: z.enum(["tarefa", "projeto", "compromisso", "memoria", "registro"]).describe("Use registro para itens dos módulos (reunião, pessoa, prova, oportunidade...)."),
       id: uuid,
       motivo: z.string().min(3).max(300),
     }),
     async executar(e, c) {
-      const tabela = { tarefa: "tasks", projeto: "projects", compromisso: "events", memoria: "memories" }[e.tipo];
+      const tabela = { tarefa: "tasks", projeto: "projects", compromisso: "events", memoria: "memories", registro: "records" }[e.tipo];
       const coluna = e.tipo === "projeto" ? "name" : e.tipo === "memoria" ? "content" : "title";
       const linha = exigir(
         await c.supabase.from(tabela).select(`id, rotulo:${coluna}`).eq("id", e.id).in("workspace_id", ids(c)).maybeSingle(),

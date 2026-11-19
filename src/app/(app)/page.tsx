@@ -15,6 +15,8 @@ import { agruparSubtarefas, listarAcoesPendentes, listarAtividade, listarEventos
 import { alertasFinanceiros, livreAteRecebimento, type Financas } from "@/modules/financeiro/calculos";
 import { carregarFinancas } from "@/modules/financeiro/dados";
 import { gerarAlertas } from "@/modules/inteligencia/alertas";
+import { listarRegistros } from "@/modules/registros/dados";
+import { alertasDeRegistros, KINDS_COM_ALERTA, type Registro } from "@/modules/registros/nucleo";
 import { NovaTarefa } from "@/modules/tarefas/nova-tarefa";
 import { TarefaItem } from "@/modules/tarefas/tarefa-item";
 
@@ -23,6 +25,7 @@ const TABELA: Record<string, [string, "a" | "o"]> = {
   projects: ["Projeto", "o"],
   events: ["Compromisso", "o"],
   memories: ["Memória", "a"],
+  records: ["Registro", "o"],
   fin_transactions: ["Lançamento", "o"],
   fin_recurring: ["Conta fixa", "a"],
   fin_installments: ["Parcelamento", "o"],
@@ -75,7 +78,18 @@ export default async function Inicio() {
     }
   }
   const livre = financas ? livreAteRecebimento(financas, hoje) : null;
-  const alertas = [...gerarAlertas({ tarefas, projetos, eventos, hoje }), ...(financas ? alertasFinanceiros(financas, hoje) : [])];
+  // Prazos dos módulos (provas, inscrições, encontros, aniversários...), só dos ambientes à vista.
+  let registros: Registro[] = [];
+  try {
+    registros = await listarRegistros(c.supabase, KINDS_COM_ALERTA, { comData: true });
+  } catch {
+    registros = []; // tabela dos módulos ainda não criada no Supabase
+  }
+  const alertas = [
+    ...gerarAlertas({ tarefas, projetos, eventos, hoje }),
+    ...(financas ? alertasFinanceiros(financas, hoje) : []),
+    ...alertasDeRegistros(registros, hoje, c.atual ? new Set([c.atual.id]) : undefined),
+  ];
   const { principais, filhas } = agruparSubtarefas(tarefas);
   const peso = { alta: 0, media: 1, baixa: 2 };
   const prioritarias = principais

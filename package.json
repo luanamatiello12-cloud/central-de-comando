@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "validar:sql": "node scripts/validar-sql.mjs",
-    "testar": "tsx scripts/testar-logica.ts && tsx scripts/testar-financeiro.ts"
+    "testar": "tsx scripts/testar-logica.ts && tsx scripts/testar-financeiro.ts && tsx scripts/testar-modulos.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.10.0",

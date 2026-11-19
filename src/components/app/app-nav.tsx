@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { NAV } from "@/lib/nav";
+import { NAV, NAV_MODULOS } from "@/lib/nav";
 import type { Ambiente } from "@/lib/tipos";
 import { cn } from "@/lib/utils";
 import { sair, trocarAmbiente } from "@/modules/conta/actions";
@@ -52,7 +52,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
 
   return (
     <>
-      <aside className="sticky top-0 hidden h-dvh flex-col gap-5 border-r border-border px-4 py-7 md:flex">
+      <aside className="sticky top-0 hidden h-dvh flex-col gap-4 overflow-y-auto border-r border-border px-4 py-7 md:flex">
         <Marca />
         <SeletorDeAmbiente ambientes={ambientes} atual={atual} />
         <nav aria-label="Seções" className="flex flex-col gap-1">
@@ -74,7 +74,27 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
             );
           })}
         </nav>
-        <div className="mt-auto flex flex-col gap-1">
+        <nav aria-label="Módulos" className="flex flex-col gap-1">
+          <p className="px-2.5 text-xs font-semibold tracking-widest text-muted-foreground uppercase">Módulos</p>
+          {NAV_MODULOS.map(({ href, label, icon: Icon }) => {
+            const on = ativo(pathname, href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={on ? "page" : undefined}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                  on && "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground",
+                )}
+              >
+                <Icon className="size-[18px]" aria-hidden />
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="mt-auto flex flex-col gap-1 pt-2">
           {local ? (
             <Link href="/configuracoes" className="px-2.5 text-xs text-muted-foreground underline-offset-4 hover:underline" title="Dados guardados neste computador">
               Modo local
@@ -112,7 +132,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
         aria-label="Seções"
         className="fixed inset-x-0 bottom-0 z-10 flex gap-1 overflow-x-auto border-t border-border bg-card px-2 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] md:hidden"
       >
-        {NAV.map(({ href, label, icon: Icon }) => {
+        {[...NAV, ...NAV_MODULOS].map(({ href, label, icon: Icon }) => {
           const on = ativo(pathname, href);
           return (
             <Link
@@ -120,7 +140,7 @@ export function AppNav({ ambientes, atual, email, local }: Props) {
               href={href}
               aria-current={on ? "page" : undefined}
               className={cn(
-                "flex min-w-14 flex-1 flex-col items-center gap-0.5 rounded-lg px-1.5 py-1 text-[0.65rem] text-muted-foreground",
+                "flex min-w-14 flex-1 flex-col items-center gap-0.5 rounded-lg px-1.5 py-1 text-[0.65rem] whitespace-nowrap text-muted-foreground",
                 on && "text-primary",
               )}
             >

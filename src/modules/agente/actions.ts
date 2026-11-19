@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { getContexto } from "@/lib/contexto";
 
 const texto = (v: FormDataEntryValue | null) => String(v ?? "").trim();
-const TABELA: Record<string, string> = { tarefa: "tasks", projeto: "projects", compromisso: "events", memoria: "memories" };
+const TABELA: Record<string, string> = { tarefa: "tasks", projeto: "projects", compromisso: "events", memoria: "memories", registro: "records" };
 
 /** O usuário confirma uma ação sensível que o agente deixou pendente. Só aqui ela acontece. */
 export async function confirmarAcao(form: FormData) {
