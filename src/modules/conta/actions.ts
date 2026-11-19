@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { COOKIE_AMBIENTE, getContexto } from "@/lib/contexto";
@@ -22,7 +22,12 @@ export async function entrarOuCadastrar(_: EstadoLogin, form: FormData): Promise
 
   const supabase = await supabaseServer();
   if (form.get("modo") === "cadastrar") {
-    const { data, error } = await supabase.auth.signUp({ email: dados.data.email, password: dados.data.senha });
+    const origem = (await headers()).get("origin") ?? "";
+    const { data, error } = await supabase.auth.signUp({
+      email: dados.data.email,
+      password: dados.data.senha,
+      options: origem ? { emailRedirectTo: `${origem}/auth/callback` } : undefined,
+    });
     if (error) return { erro: "Não foi possível criar a conta: " + error.message };
     if (!data.session) return { aviso: "Conta criada. Confirme pelo link enviado ao seu e-mail e depois entre." };
   } else {

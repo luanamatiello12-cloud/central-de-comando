@@ -35,7 +35,7 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const publico = path === "/login" || path === "/configurar";
+  const publico = path === "/login" || path === "/configurar" || path.startsWith("/auth/");
   if (!user && !publico) {
     if (ehApi) return NextResponse.json({ erro: "Sessão expirada. Entre de novo." }, { status: 401 });
     return NextResponse.redirect(new URL("/login", request.url));

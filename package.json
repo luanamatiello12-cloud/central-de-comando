@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 127.0.0.1",
+    "dev:rede": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "validar:sql": "node scripts/validar-sql.mjs",
-    "testar": "tsx scripts/testar-logica.ts && tsx scripts/testar-financeiro.ts && tsx scripts/testar-modulos.ts"
+    "testar": "tsx scripts/testar-logica.ts && tsx scripts/testar-financeiro.ts && tsx scripts/testar-modulos.ts",
+    "sql:instalar": "python scripts/gerar-instalacao.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.10.0",
